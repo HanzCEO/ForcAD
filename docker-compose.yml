@@ -139,3 +139,10 @@ services:
     ports:
       - "10000:10000"
     restart: on-failure
+
+  demo-service-2:
+    build:
+      context: ./demo_service
+    ports:
+      - "10001:10000"
+    restart: on-failure

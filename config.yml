@@ -51,5 +51,5 @@ teams:
   ip: demo-service
   name: Team 1
 - highlighted: true
-  ip: demo-service
+  ip: demo-service-2
   name: Team 2 (highlighted)
