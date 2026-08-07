@@ -3,7 +3,14 @@
 # Manual demo helper for ForcAD.
 #
 # Demonstrates service control and flag stealing from outside the server.
-# Replacement values: <SERVER_IP>, <TEAM1_TOKEN>, <TEAM2_TOKEN>.
+# No docker exec required.
+#
+# Usage:
+#   ./demo_attack.sh <SERVER_IP>
+#
+# Environment variables:
+#   TEAM1_TOKEN  token for Team 1
+#   TEAM2_TOKEN  token for Team 2
 #
 set -euo pipefail
 
@@ -24,8 +31,8 @@ print_scoreboard() {
 
 echo "=== ForcAD manual demo ==="
 echo "Server  : ${SERVER}:8080"
-printf 'Team 1  : ping %s:10000 | submit via token %s\n' "$SERVER" "${TEAM1_TOKEN:0:8}..."
-printf 'Team 2  : ping %s:10001 | submit via token %s\n' "$SERVER" "${TEAM2_TOKEN:0:8}..."
+printf 'Team 1  : flags http://%s:10000/flags/ | token %s\n' "$SERVER" "${TEAM1_TOKEN:0:8}..."
+printf 'Team 2  : flags http://%s:10001/flags/ | token %s\n' "$SERVER" "${TEAM2_TOKEN:0:8}..."
 
 echo ""
 echo "=== 1. Baseline: both services up ==="
@@ -50,14 +57,14 @@ sleep 25
 print_scoreboard
 
 echo ""
-echo "=== 4. Team 2 steals a Team 1 flag (manual) ==="
-echo "Fetch a fresh Team 1 flag from the DB:"
-echo "  docker exec forcad-postgres-1 psql -U forcad -d forcad -t -A \\"
-echo "    -c \"SELECT flag FROM flags WHERE team_id=1 ORDER BY id DESC LIMIT 1;\""
-echo ""
-echo "Submit it as Team 2:"
-echo "  curl -X PUT http://${SERVER}:8080/flags/ \\"
-echo "    -H \"X-Team-Token: ${TEAM2_TOKEN}\" \\"
-echo "    -H \"Content-Type: application/json\" \\"
-echo "    -d '[\"<FLAG>\"]'"
+echo "=== 4. Team 1 steals a Team 2 flag ==="
+FLAG=$(curl -s "http://${SERVER}:10001/flags/" \
+  | python3 -c "import json,sys; flags=json.load(sys.stdin)['flags']; print(flags[-1] if flags else 'none')")
+echo "Stolen Team 2 flag: ${FLAG}"
+echo "Submit it as Team 1:"
+curl -s -X PUT "http://${SERVER}:8080/flags/" \
+  -H "X-Team-Token: ${TEAM1_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d "[\"${FLAG}\"]"
+echo
 print_scoreboard

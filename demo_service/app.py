@@ -34,6 +34,13 @@ def get():
     return jsonify({'flag': flag})
 
 
+@app.route('/flags/', methods=['GET'])
+def list_flags():
+    if _is_down():
+        return jsonify({'status': 'down'}), 503
+    return jsonify({'flags': list(flags.values())})
+
+
 @app.route('/ping/', methods=['GET'])
 def ping():
     if _is_down():
