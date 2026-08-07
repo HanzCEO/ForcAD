@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 
 flags = {}
 PORT = int(os.environ.get('PORT', '10000'))
-DOWN_FILE = '/tmp/demo_down'
+DOWN_FILE = f'/tmp/demo_down_{PORT}'
 app = Flask(__name__)
 
 
