@@ -19,12 +19,11 @@ if [[ "${1:-}" == "--reset" ]]; then
   DO_RESET=1
 fi
 
-echo "[1/5] Creating Python virtual environment"
+echo "[1/5] Creating Python virtual environment with uv"
 if [[ ! -d .venv ]]; then
-  python3 -m venv .venv
+  uv venv --python 3.11
 fi
-.venv/bin/pip install -q --upgrade pip
-.venv/bin/pip install -q -r cli/requirements.txt
+uv pip install --python .venv/bin/python -r cli/requirements.txt
 
 echo "[2/5] Checking config.yml"
 if [[ ! -f config.yml ]]; then
