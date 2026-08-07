@@ -39,7 +39,7 @@ tasks:
   name: test_basic_service
   places: 5
   puts: 2
-- checker: test_service/gevent_checker.py
+- checker: test_service_2/gevent_checker.py
   checker_timeout: 10
   checker_type: gevent
   gets: 2

@@ -138,6 +138,7 @@ services:
       context: ./demo_service
     ports:
       - "10000:10000"
+      - "20000:20000"
     restart: on-failure
 
   demo-service-2:
@@ -145,4 +146,5 @@ services:
       context: ./demo_service
     ports:
       - "10001:10000"
+      - "20001:20000"
     restart: on-failure

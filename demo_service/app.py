@@ -4,12 +4,12 @@ from flask import Flask, request, jsonify
 
 flags = {}
 PORT = int(os.environ.get('PORT', '10000'))
-DOWN = False
+DOWN_FILE = '/tmp/demo_down'
 app = Flask(__name__)
 
 
 def _is_down():
-    return DOWN
+    return os.path.exists(DOWN_FILE)
 
 
 @app.route('/put/', methods=['POST'])
@@ -50,15 +50,14 @@ def ping():
 
 @app.route('/down/', methods=['POST'])
 def down():
-    global DOWN
-    DOWN = True
+    open(DOWN_FILE, 'a').close()
     return jsonify({'status': 'down', 'mode': 'down'})
 
 
 @app.route('/up/', methods=['POST'])
 def up():
-    global DOWN
-    DOWN = False
+    if os.path.exists(DOWN_FILE):
+        os.remove(DOWN_FILE)
     return jsonify({'status': 'ok', 'mode': 'up'})
 
 
